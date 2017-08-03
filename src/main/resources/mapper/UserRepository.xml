@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ramostear.xbuilder.repository.UserRepository">
+	
+	<resultMap type="com.ramostear.xbuilder.model.User" id="userResult">
+		<id column="id" property="id"/>
+	   	<result column="username" property="username"/>
+	   	<result column="nickname" property="nickname"/>
+	   	<result column="password" property="password"/>
+	   	<result column="salt" property="salt"/>
+	   	<result column="createTime" property="createTime"/>
+	   	<result column="status" property="status"/>
+	   	<result column="avatar" property="avatar"/>
+	   	<result column="signature" property="signature"/>
+	   	<result column="email" property="email"/>
+	   	<result column="type" property="type"/>
+	   	<result column="phone" property="phone"/>
+	   	<result column="qq" property="qq"/>
+	   	<result column="weibo" property="weibo"/>
+	</resultMap>
+	
+	<sql id="selectSql">
+		id,username,nickname,password,createTime,salt,status,avatar,signature,email,type,phone,qq,weibo 
+	</sql>
+
+	<insert id="create" parameterType="com.ramostear.xbuilder.model.User" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		insert into sys_user 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="username != null">username,</if>
+			<if test="nickname != null">nickname,</if>
+			<if test="password != null">password,</if>
+			<if test="username != null">salt,</if>
+			<if test="createTime != null">createTime,</if>
+			<if test="status != null">status,</if>
+			<if test="avatar != null">avatar,</if>
+			<if test="signature != null">signature,</if>
+			<if test="email != null">email,</if>
+			<if test="type != null">type,</if>
+			<if test="type != null">phone,</if>
+			<if test="qq != null">qq,</if>
+			<if test="weibo != null">weibo</if>
+		</trim>
+		<trim prefix="values(" suffix=")" suffixOverrides=",">
+			<if test="username != null">#{username},</if>
+			<if test="nickname != null">#{nickname},</if>
+			<if test="password != null">#{password},</if>
+			<if test="username != null">#{salt},</if>
+			<if test="createTime != null">#{createTime},</if>
+			<if test="status != null">#{status},</if>
+			<if test="avatar != null">#{avatar},</if>
+			<if test="signature != null">#{signature},</if>
+			<if test="email != null">#{email},</if>
+			<if test="type != null">#{type},</if>
+			<if test="type != null">#{phone},</if>
+			<if test="qq != null">#{qq},</if>
+			<if test="weibo != null">#{weibo}</if>
+		</trim>
+	</insert>
+
+	<update id="update" parameterType="com.ramostear.xbuilder.model.User">
+		update sys_user 
+		<set>
+			<if test="nickname != null">nickname = #{nickname},</if>
+			<if test="password != null">password = #{password},</if>
+			<if test="salt != null">salt = #{salt},</if>
+			<if test="status != null">status = #{status},</if>
+			<if test="avatar != null">avatar = #{avatar},</if>
+			<if test="signature != null"> signature = #{signature},</if>
+			<if test="email != null">email = #{email},</if>
+			<if test="type != null">type = #{type},</if>
+			<if test="phone != null">phone = #{phone},</if>
+			<if test="qq != null">qq = #{qq},</if>
+			<if test="weibo != null">weibo = #{weibo}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<update id="updateWithCondition" parameterType="com.ramostear.xbuilder.model.User">
+		update sys_user 
+		<set>
+			<if test="nickname != null">nickname = #{nickname},</if>
+			<if test="password != null">password = #{password},</if>
+			<if test="salt != null">salt = #{salt},</if>
+			<if test="status != null">status = #{status},</if>
+			<if test="avatar != null">avatar = #{avatar},</if>
+			<if test="signature != null"> signature = #{signature},</if>
+			<if test="email != null">email = #{email},</if>
+			<if test="type != null">type = #{type},</if>
+			<if test="phone != null">phone = #{phone},</if>
+			<if test="qq != null">qq = #{qq},</if>
+			<if test="weibo != null">weibo = #{weibo}</if>
+		</set>
+		where id = #{id} 
+		<if test="conditions != null">
+			and 
+			<foreach collection="conditions.keys" item="key" separator="and">
+				${key} = #{conditions[${key}]}
+			</foreach>
+		</if>
+	</update>
+	
+	<delete id="delete" parameterType="Long">
+		delete from sys_user 
+		where 
+		id = #{id}
+	</delete>
+
+	<select id="findOne" parameterType="Long" resultType="com.ramostear.xbuilder.model.User" >
+		select <include refid="selectSql"></include> 
+		from sys_user 
+		where id = #{id}
+	</select>
+	
+	<select id="findByName" parameterType="String" resultType="com.ramostear.xbuilder.model.User">
+		select <include refid="selectSql"></include> 
+		from sys_user 
+		where username = #{username}
+	</select>
+	
+	<select id="findAll" resultType="com.ramostear.xbuilder.model.User">
+		select <include refid="selectSql"></include> 
+		from sys_user 
+		<if test="conditions != null">
+			where 
+			<foreach collection="conditions.keys" item="key" separator="and">
+				${key} = #{conditions[${key}]}
+			</foreach>
+		</if>
+		order by ${orderParam} 
+		<if test="orderType == true">
+			DESC
+		</if>
+		<if test="orderType == false">
+			ASC
+		</if>
+	</select>
+	
+	<select id="size" resultType="Long">
+		select count(*) from sys_user
+	</select>
+	
+	<select id="sizeWithConditions" resultType="Long">
+		select count(*) from sys_user 
+		<if test="conditions != null">
+			where 
+			<foreach collection="conditions.keys" item="key" separator="and">
+				${key} = #{conditions[${key}]}
+			</foreach>
+		</if>
+	</select>
+	
+	<select id="pagination" resultType="com.ramostear.xbuilder.model.User">
+		select <include refid="selectSql"></include> 
+		from sys_user 
+		<if test="conditions != null">
+			where 
+			<foreach collection="conditions.keys" item="key" separator="and">
+				${key}=#{conditions[${key}]}
+			</foreach>
+		</if>
+		order by ${orderParam} 
+		<if test="orderType == true">
+			DESC
+		</if>
+		<if test="orderType == false">
+			ASC 
+		</if>
+		limit #{offset},#{size}
+	</select>
+	
+	
+	<delete id="batchDelete">
+		delete from sys_user 
+		where sys_user.id in 
+		<foreach collection="uids" item="id" index="index" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<insert id="correlationRoles">
+		insert into sys_user_role(uid,rid) values
+		<foreach collection="rids" item="rid" index="index" separator=",">
+			(#{id},#{rid})
+		</foreach>
+	</insert>
+	
+	<delete id="uncorrelationRoles">
+		delete from sys_user_role 
+		where uid=#{id} 
+		and rid in 
+		<foreach collection="rids" item="rid" index="index" open="(" separator="," close=")">
+			#{rid}
+		</foreach>
+	</delete>
+	
+	<delete id="uncorrelationAllRoles">
+		delete from sys_user_role 
+		where uid=#{id}
+	</delete>
+	
+	<delete id="deleteUserRole">
+		delete from sys_user_role 
+		where uid = #{id}
+	</delete>
+	
+	<delete id="batchDeleteUserRole">
+		delete from sys_user_role 
+		where 
+		uid in 
+		<foreach collection="uids" item="id" index="index" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<select id="findRoleNames" resultType="String" parameterType="String">
+		select r.name 
+		from sys_user u,sys_role r,sys_user_role ur 
+		where 
+		u.username = #{username} 
+		and 
+		u.id = ur.uid 
+		and 
+		r.id = ur.rid 
+	</select>
+	
+	<select id="findPermissions" parameterType="String" resultType="String">
+		select p.permission 
+		from sys_user u,sys_role r,sys_permission p,sys_user_role ur,sys_role_permission rp 
+		where 
+		u.username = #{username} 
+		and 
+		u.id = ur.uid 
+		and r.id = ur.rid 
+		and r.id = rp.rid 
+		and p.id = rp.pid
+	</select>
+	
+	<select id="findRoleIds" parameterType="Long" resultType="Long">
+		select r.id 
+		from sys_user u,sys_role r,sys_user_role ur 
+		where 
+		u.id = #{id} 
+		and 
+		u.id = ur.uid 
+		and 
+		r.id = ur.rid
+	</select>	
+		
+	
+</mapper>

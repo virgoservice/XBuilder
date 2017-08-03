@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ramostear.xbuilder.repository.RoleRepository">
+	
+	<resultMap type="com.ramostear.xbuilder.model.Role" id="roleResult">
+		<id column="id" property="id"/>
+	   	<result column="name" property="name"/>
+	   	<result column="createTime" property="createTime"/>
+	   	<result column="description" property="description"/>
+	</resultMap>
+
+	<insert id="create" parameterType="com.ramostear.xbuilder.model.Role" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		insert into sys_role 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="name != null">name,</if>
+			<if test="createTime != null">createTime,</if>
+			<if test="description != null">description</if>
+		</trim>
+		<trim prefix="values(" suffix=")" suffixOverrides=",">
+			<if test="name != null">#{name},</if>
+			<if test="createTime != null">#{createTime},</if>
+			<if test="description != null">#{description}</if>
+		</trim>
+	</insert>
+
+	<update id="update" parameterType="com.ramostear.xbuilder.model.Role">
+		update sys_role 
+		<set>
+			<if test="name != null">name = #{name},</if>
+			<if test="description != null">description = #{description}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete" parameterType="Long">
+		delete from sys_role 
+		where 
+		id = #{id}
+	</delete>
+
+	<select id="findOne" parameterType="Long" resultType="com.ramostear.xbuilder.model.Role" >
+		select * from sys_role 
+		where id = #{id}
+	</select>
+	
+	<select id="findAll" resultType="com.ramostear.xbuilder.model.Role">
+		select * from sys_role 
+		<if test="conditions != null">
+			where 
+			<foreach collection="conditions.keys" item="key" separator="and">
+				${key} = #{conditions[${key}]}
+			</foreach>
+		</if>
+		order by ${orderParam} 
+		<if test="orderType == true">
+			DESC
+		</if>
+		<if test="orderType == false">
+			ASC
+		</if>
+	</select>
+	
+	<select id="size" resultType="Long">
+		select count(*) from sys_role
+	</select>
+	
+	<select id="sizeWithConditions" resultType="Long">
+		select count(*) from sys_role 
+		<if test="conditions != null">
+			where 
+			<foreach collection="conditions.keys" item="key" separator="and">
+				${key} = #{conditions[${key}]}
+			</foreach>
+		</if>
+	</select>
+	
+	<select id="pagination" resultType="com.ramostear.xbuilder.model.Role">
+		select * from sys_role 
+		<if test="conditions != null">
+			where 
+			<foreach collection="conditions.keys" item="key" separator="and">
+				${key}=#{conditions[${key}]}
+			</foreach>
+		</if>
+		order by ${orderParam} 
+		<if test="orderType == true">
+			DESC
+		</if>
+		<if test="orderType == false">
+			ASC 
+		</if>
+		limit #{offset},#{size}
+	</select>
+	
+	
+	<delete id="batchDelete" parameterType="java.lang.String">
+		delete from sys_role 
+		where sys_role.id in 
+		<foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<delete id="uncorrelationOneRoleUser">
+		delete from sys_user_role 
+		where 
+		rid=#{id}
+	</delete>
+
+	<delete id="uncorrelationManyRoleUser">
+		delete from sys_user_role 
+		where rid in 
+		<foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<delete id="uncorrelationOneRolePermission">
+		delete from sys_role_permission 
+		where 
+		rid = #{id}
+	</delete>
+	
+	<delete id="uncorrelationManyRolePermission">
+		delete from sys_role_permission 
+		where 
+		rid in 
+		<foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<insert id="correlationRolePermission">
+		insert into sys_role_permission (rid,pid) values
+		<foreach collection="pids" item="pid" index="index" separator=",">
+			(#{id},#{pid})
+		</foreach>
+	</insert>		
+	
+	<select id="findPermission" resultType="java.lang.Long">
+		select pid from sys_role_permission 
+		where 
+		rid = #{id}
+	</select>
+</mapper>
